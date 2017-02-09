@@ -3,7 +3,7 @@ if (!isBrowser()) {
 	bfet = require('../src/bfet');
 }
 
-describe("internet request", function() {
+describe("get request", function() {
 	it("should get object as result", function(done) {
 		bfet.get("https://api.pbapp.net/Player/jontestuser?api_key=2043203153")
 			.then((result) => {
@@ -19,7 +19,7 @@ describe("internet request", function() {
 	it("should get string as result", function(done) {
 		bfet.get("https://api.pbapp.net/Player/jontestuser?api_key=2043203153", null, { json_parse: false })
 			.then((result) => {
-				// ensure that result is object
+				// ensure that result is not object
 				expect(typeof result == "string").toBeTruthy();
 				expect(result.success == undefined || result.success == null).toBeTruthy();
 				done();
