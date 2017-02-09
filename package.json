@@ -6,7 +6,7 @@
   "scripts": {
     "prepublish": "npm run build",
     "build": "./node_modules/.bin/rimraf lib/* && ./node_modules/.bin/babel src -d lib && gulp build",
-    "test": "gulp unittest",
+    "test": "./node_modules/.bin/jasmine && gulp unittest",
     "docs": "gulp doc",
     "start": "gulp buildDev && npm run http-and-watch",
     "http-and-watch": "./node_modules/.bin/lite-server & gulp watch",
@@ -38,7 +38,8 @@
     "gulp-replace": "^0.5.4",
     "gulp-streamify": "^1.0.2",
     "gulp-uglify": "^2.0.0",
-    "jasmine": "^2.5.2",
+    "http-browserify": "^1.7.0",
+    "jasmine": "^2.5.3",
     "jasmine-core": "^2.5.2",
     "jsdoc": "^3.4.1",
     "karma": "^0.13.22",

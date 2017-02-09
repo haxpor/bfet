@@ -3,9 +3,10 @@
  */
 
 // -- bfet -- //
-var bfet = require('./core/core.js')();
+var bfet = require('./core/_core.js')();
 
 require('./core/core.util.js')(bfet);
+require('./core/core.js')(bfet);	// core should be defined last as it needs util
 
 module.exports = bfet;
 // if it's in browser environment
