@@ -1,15 +1,15 @@
 {
   "name": "bfet",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Your project description here",
   "main": "lib/bfet.js",
   "scripts": {
     "prepublish": "npm run build",
-    "build": "./node_modules/.bin/rimraf lib/* && ./node_modules/.bin/babel src -d lib && gulp build",
+    "build": "./node_modules/.bin/rimraf dist/* && ./node_modules/.bin/rimraf lib/* && ./node_modules/.bin/babel src -d lib && gulp build",
     "test": "./node_modules/.bin/jasmine && gulp unittest",
     "docs": "gulp doc",
     "start": "gulp buildDev && npm run http-and-watch",
-    "http-and-watch": "./node_modules/.bin/lite-server & gulp watch",
+    "http-and-watch": "npm run build && ./node_modules/.bin/lite-server & gulp watch",
     "clean": "./node_modules/.bin/rimraf dist/* && ./node_modules/.bin/rimraf lib/* && ./node_modules/.bin/rimraf docs/*"
   },
   "repository": {

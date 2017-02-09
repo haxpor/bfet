@@ -43,4 +43,17 @@ describe("post request", function() {
 				fail(e);
 			});
 	});
-});
+
+	it("should get error from API's response", function(done) {
+		bfet.post("https://api.pbapp.net/Auth")
+			.then((result) => {
+				// ensure that result is not object
+				expect(typeof result == "object").toBeTruthy();
+				expect(result.success == false).toBeTruthy();
+				expect(result.error_code == "0903").toBeTruthy();
+				done();
+			}, (e) => {
+				fail(e);
+			});
+	});
+ });
