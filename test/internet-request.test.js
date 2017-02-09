@@ -63,4 +63,19 @@ describe("internet request", function() {
 				fail(e);
 			});
 	});
+
+	// only test this test case on nodejs
+	// as target website doesn't support CORS
+	if (!isBrowser()) {
+		it("should get HTML content back", function(done) {
+			bfet.get("https://www.baidu.com", null, { json_parse: false })
+			.then((result) => {
+				expect(typeof result == "string").toBeTruthy();
+				expect(result.search('百度一下，你就知道') != -1).toBeTruthy();	// this is very less likely to be changed
+				done();
+			}, (e) => {
+				fail(e);
+			});
+		});
+	}
 });
