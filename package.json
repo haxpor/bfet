@@ -1,7 +1,7 @@
 {
   "name": "bfet",
   "version": "1.0.0",
-  "description": "Your project description here",
+  "description": "A thin minimal wrapped around http|https NodeJS module for NodeJS and browser.",
   "main": "lib/bfet.js",
   "scripts": {
     "prepublish": "npm run build",

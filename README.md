@@ -1,5 +1,5 @@
 # bfet
-A thin minimal wrapped around http|https NodeJS module for NodeJS and browser.
+A thin minimal wrapped around http|https NodeJS module for NodeJS and Browser.
 
 # Features
 
@@ -10,6 +10,18 @@ bfet supports sending `GET` and `POST` request method for both HTTP and HTTPS wi
 Install it via `npm install bget`
 
 # Usage
+
+## Promise Ready
+
+```javascript
+bfet.get("https://targetdomain.com")
+		.then((result) => {
+			// do something with result here...
+		}, (e) => {
+			// error here, you can inspect its code and message
+			// via e.code and e.message
+		});
+```
 
 ## GET Request
 
