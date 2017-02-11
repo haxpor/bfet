@@ -64,9 +64,30 @@ module.exports = function(bfet) {
 				const request = lib.get(furl, (response) => {
 					// handle http errors
 					if (response.statusCode != 200) {
-						var error = new Error(response.statusCode)
-						error.code = response.statusCode;
-						return reject(error);
+
+						if (response.statusCode == 301) {
+							// make a new request
+							bfet.get(response.headers.location, opt_paramsObj, opts)
+								.then((_r) => {
+									return resolve(_r);
+								}, (_e) => {
+									return reject(_e);
+								});
+						}
+						else if (response.statusCode == 302) {
+							// make a new request
+							bfet.get(response.headers.location, opt_paramsObj, opts)
+								.then((_r) => {
+									return resolve(_r);
+								}, (_e) => {
+									return reject(_e);
+								});
+						}
+						else {
+							var error = new Error(response.statusCode)
+							error.code = response.statusCode;
+							return reject(error);
+						}
 					}
 
 					// listen to event 'data' for each indivdiual chunk of data
@@ -197,9 +218,30 @@ module.exports = function(bfet) {
 				const request = lib.request(postOptions, (response) => {
 					// handle http errors
 					if (response.statusCode != 200) {
-						var error = new Error(response.statusCode)
-						error.code = response.statusCode;
-						return reject(error);
+
+						if (response.statusCode == 301) {
+							// make a new request
+							bfet.post(response.headers.location, postDataObj, opts)
+								.then((_r) => {
+									return resolve(_r);
+								}, (_e) => {
+									return reject(_e);
+								});
+						}
+						else if (response.statusCode == 302) {
+							// make a new request
+							bfet.post(response.headers.location, postDataObj, opts)
+								.then((_r) => {
+									return resolve(_r);
+								}, (_e) => {
+									return reject(_e);
+								});
+						}
+						else {
+							var error = new Error(response.statusCode)
+							error.code = response.statusCode;
+							return reject(error);
+						}
 					}
 
 					// listen to event 'data' for each indivdiual chunk of data
