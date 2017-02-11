@@ -89,56 +89,57 @@ module.exports = function(bfet) {
 							return reject(error);
 						}
 					}
+					else {
+						// listen to event 'data' for each indivdiual chunk of data
+						response.on('data', (chunk) => {
+							dataChunks.push(chunk);
+						});
 
-					// listen to event 'data' for each indivdiual chunk of data
-					response.on('data', (chunk) => {
-						dataChunks.push(chunk);
-					});
+						// listen to event 'end' when all chunks of data are transmitted
+						response.on('end', () => {
 
-					// listen to event 'end' when all chunks of data are transmitted
-					response.on('end', () => {
+							// combine all data chunks together
+							let d = dataChunks.join('');
 
-						// combine all data chunks together
-						let d = dataChunks.join('');
-
-						// check if data is null
-						if (d == null) {
-							var error = new Error("Response is null");
-							error.code = bfet.errorCode.responseIsNull;
-							return reject();
-						}
-
-						let rd = null;
-						var json_parse = bfet.util.propChk(opts, "json_parse", true);
-
-						if (json_parse) {
-							try {
-								// parse data resposne to json
-								rd = JSON.parse(d);
+							// check if data is null
+							if (d == null) {
+								var error = new Error("Response is null");
+								error.code = bfet.errorCode.responseIsNull;
+								return reject();
 							}
-							catch(e) {
-								var error = new Error("Error parsing JSON response message [" + e.message + "]");
-								error.code = bfet.errorCode.jsonParsedError;
-								return reject(error);
+
+							let rd = null;
+							var json_parse = bfet.util.propChk(opts, "json_parse", true);
+
+							if (json_parse) {
+								try {
+									// parse data resposne to json
+									rd = JSON.parse(d);
+								}
+								catch(e) {
+									var error = new Error("Error parsing JSON response message [" + e.message + "]");
+									error.code = bfet.errorCode.jsonParsedError;
+									return reject(error);
+								}
 							}
-						}
-						else {
-							// just get the data back
-							rd = d;
-						}
+							else {
+								// just get the data back
+								rd = d;
+							}
 
-						// all ok
-						// note: we didn't check for api-level error here, user
-						// need to manually check on their side
-						return resolve(rd);
-					});
+							// all ok
+							// note: we didn't check for api-level error here, user
+							// need to manually check on their side
+							return resolve(rd);
+						});
 
-					// listen to event 'error'
-					response.on('error', (e) => {
-						var error = new Error("Response error [" + e.message + "]");
-						error.code = bfet.errorCode.responseError;
-						return reject(error); 
-					});
+						// listen to event 'error'
+						response.on('error', (e) => {
+							var error = new Error("Response error [" + e.message + "]");
+							error.code = bfet.errorCode.responseError;
+							return reject(error); 
+						});
+					}
 				});
 
 				request.on('error', (e) => {
@@ -243,56 +244,57 @@ module.exports = function(bfet) {
 							return reject(error);
 						}
 					}
+					else {
+						// listen to event 'data' for each indivdiual chunk of data
+						response.on('data', (chunk) => {
+							dataChunks.push(chunk);
+						});
 
-					// listen to event 'data' for each indivdiual chunk of data
-					response.on('data', (chunk) => {
-						dataChunks.push(chunk);
-					});
+						// listen to event 'end' when all chunks of data are transmitted
+						response.on('end', () => {
 
-					// listen to event 'end' when all chunks of data are transmitted
-					response.on('end', () => {
+							// combine all data chunks together
+							let d = dataChunks.join('');
 
-						// combine all data chunks together
-						let d = dataChunks.join('');
-
-						// check if data is null
-						if (d == null) {
-							var error = new Error("Response is null");
-							error.code = bfet.errorCode.responseIsNull;
-							return reject();
-						}
-
-						let rd = null;
-						var json_parse = bfet.util.propChk(opts, "json_parse", true);
-
-						if (json_parse) {
-							try {
-								// parse data resposne to json
-								rd = JSON.parse(d);
+							// check if data is null
+							if (d == null) {
+								var error = new Error("Response is null");
+								error.code = bfet.errorCode.responseIsNull;
+								return reject();
 							}
-							catch(e) {
-								var error = new Error("Error parsing JSON response message [" + e.message + "]");
-								error.code = bfet.errorCode.jsonParsedError;
-								return reject(error);
+
+							let rd = null;
+							var json_parse = bfet.util.propChk(opts, "json_parse", true);
+
+							if (json_parse) {
+								try {
+									// parse data resposne to json
+									rd = JSON.parse(d);
+								}
+								catch(e) {
+									var error = new Error("Error parsing JSON response message [" + e.message + "]");
+									error.code = bfet.errorCode.jsonParsedError;
+									return reject(error);
+								}
 							}
-						}
-						else {
-							// just get the data back
-							rd = d;
-						}
+							else {
+								// just get the data back
+								rd = d;
+							}
 
-						// all ok
-						// note: we didn't check for api-level error here, user
-						// need to manually check on their side
-						return resolve(rd);
-					});
+							// all ok
+							// note: we didn't check for api-level error here, user
+							// need to manually check on their side
+							return resolve(rd);
+						});
 
-					// listen to event 'error'
-					response.on('error', (e) => {
-						var error = new Error("Response error [" + e.message + "]");
-						error.code = bfet.errorCode.responseError;
-						return reject(error); 
-					});
+						// listen to event 'error'
+						response.on('error', (e) => {
+							var error = new Error("Response error [" + e.message + "]");
+							error.code = bfet.errorCode.responseError;
+							return reject(error); 
+						});
+					}
 				});
 
 				request.on('error', (e) => {
