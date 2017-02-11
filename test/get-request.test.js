@@ -64,16 +64,6 @@ describe("get request", function() {
 			});
 	});
 
-	it("should be able to support 302 (redirect URL)", function(done) {
-		// playbasis.com has returned 302, and support CORS
-		bfet.get("https://playbasis.com", null, { json_parse: false} )
-			.then((result) => {
-				done();
-			}, (e) => {
-				fail(e);
-			});
-	});
-
 	// only test this test case on nodejs
 	// as target website doesn't support CORS
 	if (!isBrowser()) {
@@ -89,13 +79,24 @@ describe("get request", function() {
 		});
 
 		it("should be able to support 301 (moved permanently)", function(done) {
-		// baidu.com has returned 301, but doesn't support CORS
+		// baidu.com has returned 301
 		bfet.get("https://baidu.com", null, { json_parse: false })
 			.then((result) => {
 				done();
 			}, (e) => {
 				fail(e);
 			});
-	});
+		});
+
+		it("should be able to support 302 (redirect URL)", function(done) {
+			// playbasis.com has returned 302
+			bfet.get("https://playbasis.com", null, { json_parse: false} )
+				.then((result) => {
+					done();
+				}, (e) => {
+					console.log("error: ", e);
+					fail(e);
+				});
+		});
 	}
 });
