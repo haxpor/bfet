@@ -1,6 +1,6 @@
 {
   "name": "bfet",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "A thin minimal wrapped around http|https NodeJS module for NodeJS and browser.",
   "main": "lib/bfet.js",
   "scripts": {
