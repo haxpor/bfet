@@ -5,9 +5,11 @@ A thin minimal wrapped around http|https NodeJS module for NodeJS and Browser.
 
 bfet supports sending `GET` and `POST` request method for both HTTP and HTTPS with an option to parse response as JSON or just simple string. Support Promise as return.
 
+Only target url that supports [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) will work on browser, otherwise it will return error accordingly. There should be no problem on NodeJS.
+
 # Install
 
-Install it via `npm install bget`
+Install it via `npm install bfet`
 
 # Usage
 
