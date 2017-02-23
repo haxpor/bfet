@@ -2,6 +2,8 @@
 
 module.exports = function(bfet) {
 
+		var isBrowser = new Function("try {return this===window;}catch(e){ return false;}");
+
     bfet.errorCode = {
     	responseIsNull: 99999,
     	jsonParsedError: 99998,
@@ -29,7 +31,9 @@ module.exports = function(bfet) {
 		 * @param  {Object} opts          **optional** Options as object.  
 		 * It can include  
 		 * {  
-		 * `json_parse`: *Boolean* = Whether or not for result to be parsed via JSON parser. Set this to true to force it to parse result as json. Default is true.  
+		 * `json_parse`: *Boolean* = Whether or not for result to be parsed via JSON parser. Set this to true to force it to parse result as json. Default is true.,
+		 * `username`: *String* = username to be used in basic authentication. It will be sent via Authorization header.  
+		 * `password`: *String* = password to be used in basic authentication. It will be sent via Authorization header.  
 		 * }
 		 * @return {Object}               Promise object
 		 * @method get
@@ -54,6 +58,35 @@ module.exports = function(bfet) {
 	    // get final url
 	    var furl = url + param_str;
 
+	    // create a request options
+	    var isHttps = furl.startsWith("https");
+	    // cut out prefixed protocal
+			var noPrefixUrl = isHttps ? furl.substring(8) : furl.substring(7);
+			// get base url, and the less
+			const firstSlashPos = noPrefixUrl.indexOf("/");
+			const baseUrl = noPrefixUrl.substring(0, firstSlashPos == -1 ? noPrefixUrl.length : firstSlashPos);
+			const pathUrl = "/" + (firstSlashPos == -1 ? "" : noPrefixUrl.substring(firstSlashPos+1));
+
+			// form options for reqeust
+			// we also need to calculate byte-lenth of post data to send too
+			var req_options = {
+				hostname: baseUrl,	// cut out protocal string, and get only host name string
+				path: pathUrl,
+				port: isHttps ? 443 : 80,
+				method: 'GET',
+				headers: {
+					'User-Agent': isBrowser() ? navigator.userAgent : "bfet"
+				}
+			};
+
+	    // check if there's username & password option to set to authorization header
+	    if (opts != null) {
+		    if (opts.username != undefined && opts.username != null && opts.username != "" &&
+		    		opts.password != undefined && opts.password != null && opts.password != "") {
+		    	req_options['auth'] = opts.username + ":" + opts.password;
+		    }
+		  }
+
     	return new Promise( (resolve, reject) => {
     		const lib = furl.search('https') != -1 ? require('https') : require('http');
 
@@ -61,7 +94,7 @@ module.exports = function(bfet) {
 				var dataChunks = [];
 
 				// make a GET request
-				const request = lib.get(furl, (response) => {
+				const request = lib.get(req_options, (response) => {
 					// handle http errors
 					if (response.statusCode != 200) {
 
@@ -167,6 +200,8 @@ module.exports = function(bfet) {
 		 * It can include  
 		 * {  
 		 * `json_parse`: *Boolean* = Whether or not for result to be parsed via JSON parser. Set this to true to force it to parse result as json. Default is true.  
+		 * `username`: *String* = username to be used in basic authentication. It will be sent via Authorization header.  
+		 * `password`: *String* = password to be used in basic authentication. It will be sent via Authorization header.  
 		 * }
 		 * @return {Object}               Promise object
 		 * @method post
@@ -193,8 +228,8 @@ module.exports = function(bfet) {
 			var noPrefixUrl = isHttps ? url.substring(8) : url.substring(7);
 			// get base url, and the less
 			const firstSlashPos = noPrefixUrl.indexOf("/");
-			const baseUrl = noPrefixUrl.substring(0, firstSlashPos);
-			const pathUrl = "/" + noPrefixUrl.substring(firstSlashPos+1);
+			const baseUrl = noPrefixUrl.substring(0, firstSlashPos == -1 ? noPrefixUrl.length : firstSlashPos);
+			const pathUrl = "/" + (firstSlashPos == -1 ? "" : noPrefixUrl.substring(firstSlashPos+1));
 
 			// form options for reqeust
 			// we also need to calculate byte-lenth of post data to send too
@@ -204,10 +239,19 @@ module.exports = function(bfet) {
 				port: isHttps ? 443 : 80,
 				method: 'POST',
 				headers: {
+					'User-Agent': isBrowser() ? navigator.userAgent : "bfet",
 					'Content-Type': 'application/x-www-form-urlencoded',
 					'Content-Length': Buffer.byteLength(postDataString)
 				}
 			};
+
+			// check if there's username & password option to set to authorization header
+			if (opts != null) {
+		    if (opts.username != undefined && opts.username != null && opts.username != "" &&
+		    		opts.password != undefined && opts.password != null && opts.password != "") {
+		    	req_options.headers['Authorization'] = opts.username + ":" + opts.password;
+		    }
+		  }
 
     	return new Promise( (resolve, reject) => {
     		const lib = url.search('https') != -1 ? require('https') : require('http');
