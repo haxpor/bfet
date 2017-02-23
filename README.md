@@ -35,11 +35,23 @@ bfet.get("https://targetdomain.com")
 
 `bfet.get("https://targetdomain.com", { myanswer: 1 }, { json_parse: false })`
 
+`bfet.get("https://targetdomain.com", { myanswer: 1 }, { username: "myusername", password: "mypassword" })`
+
 ## POST Request
 
 `bfet.post("https://targetdomain.com", { myanswer: 1 })`
 
 `bfet.post("https://targetdomain.com", { myanswer: 1 }, { json_parse: false })`
+
+`bfet.post("https://targetdomain.com", { myanswer: 1 }, { username: "myusername", password: "mypassword" })`
+
+## Options
+
+You have following options to set for your request.
+
+* `json_parse` - `Boolean` - Default is `true`, you can set to `false` to not parse the result you get.
+* `username` - `String` - If target URL needs basic authorization, you can set username here.
+* `password` - `String` - If target URl needs basic authorization, you can set password here.
 
 # Development
 
