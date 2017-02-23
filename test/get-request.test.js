@@ -71,7 +71,7 @@ describe("get request", function() {
 			bfet.get("https://www.baidu.com", null, { json_parse: false })
 			.then((result) => {
 				expect(typeof result == "string").toBeTruthy();
-				expect(result.search('百度一下，你就知道') != -1).toBeTruthy();	// this is very less likely to be changed
+				expect(result != null && result != "").toBeTruthy();
 				done();
 			}, (e) => {
 				fail(e);
@@ -80,6 +80,7 @@ describe("get request", function() {
 
 		it("should be able to support 301 (moved permanently)", function(done) {
 		// baidu.com has returned 301
+		// it's ok as it might not return within the limit timeout
 		bfet.get("https://baidu.com", null, { json_parse: false })
 			.then((result) => {
 				done();
