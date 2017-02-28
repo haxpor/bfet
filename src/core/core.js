@@ -305,7 +305,12 @@ module.exports = function(bfet) {
 			if (opts != null) {
 		    if (opts.username != undefined && opts.username != null && opts.username != "" &&
 		    		opts.password != undefined && opts.password != null && opts.password != "") {
-		    	req_options.headers['Authorization'] = opts.username + ":" + opts.password;
+		    	postOptions['auth'] = opts.username + ":" + opts.password;
+		    }
+
+		    if (opts.headers != undefined && opts.headers != null) {
+		    	// merge in user's headers with bfet's headers
+		    	postOptions.headers = bfet.util.merge(postOptions.headers, opts.headers);
 		    }
 		  }
 
@@ -320,17 +325,8 @@ module.exports = function(bfet) {
 					// handle http errors
 					if (response.statusCode != 200) {
 
-						if (response.statusCode == 301) {
-							// make a new request
-							bfet.post(response.headers.location, postDataObj, opts)
-								.then((_r) => {
-									return resolve( { response: _r, responseHeaders: response.headers });
-								}, (_e) => {
-									_e.responseHeaders = response.headers;
-									return reject(_e);
-								});
-						}
-						else if (response.statusCode == 302) {
+						if (response.statusCode == 301 ||
+								response.statusCode == 302) {
 							// make a new request
 							bfet.post(response.headers.location, postDataObj, opts)
 								.then((_r) => {
