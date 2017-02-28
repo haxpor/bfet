@@ -8,8 +8,8 @@ describe("get request", function() {
 		bfet.get("https://api.pbapp.net/Player/jontestuser?api_key=2043203153")
 			.then((result) => {
 				// ensure that result is object
-				expect(typeof result == "object").toBeTruthy();
-				expect(result.success).not.toBe(null);
+				expect(typeof result.response == "object").toBeTruthy();
+				expect(result.response.success).not.toBe(null);
 				done();
 			}, (e) => {
 				fail(e);
@@ -20,8 +20,8 @@ describe("get request", function() {
 		bfet.get("https://api.pbapp.net/Player/jontestuser?api_key=2043203153", null, { json_parse: false })
 			.then((result) => {
 				// ensure that result is not object
-				expect(typeof result == "string").toBeTruthy();
-				expect(result.success == undefined || result.success == null).toBeTruthy();
+				expect(typeof result.response == "string").toBeTruthy();
+				expect(result.response.success == undefined || result.success == null).toBeTruthy();
 				done();
 			}, (e) => {
 				fail(e);
@@ -37,9 +37,9 @@ describe("get request", function() {
 		bfet.get("https://api.pbapp.net/Player/jontestuser", params)
 			.then((result) => {
 				// ensure that result is object
-				expect(typeof result == "object").toBeTruthy();
-				expect(result.success).not.toBe(null);
-				expect(result.success).toBeTruthy();
+				expect(typeof result.response == "object").toBeTruthy();
+				expect(result.response.success).not.toBe(null);
+				expect(result.response.success).toBeTruthy();
 				done();
 			}, (e) => {
 				fail(e);
@@ -55,9 +55,9 @@ describe("get request", function() {
 		bfet.get("https://api.pbapp.net/Player/jontestuser", params, { json_parse: false })
 			.then((result) => {
 				// ensure that result is string
-				expect(typeof result == "string").toBeTruthy();
-				expect(result.success == undefined || result.success == null).toBeTruthy();
-				expect(result.search("Success") != -1).toBeTruthy();
+				expect(typeof result.response == "string").toBeTruthy();
+				expect(result.response.success == undefined || result.success == null).toBeTruthy();
+				expect(result.response.search("Success") != -1).toBeTruthy();
 				done();
 			}, (e) => {
 				fail(e);
@@ -70,8 +70,8 @@ describe("get request", function() {
 		it("should get HTML content back", function(done) {
 			bfet.get("https://www.baidu.com", null, { json_parse: false })
 			.then((result) => {
-				expect(typeof result == "string").toBeTruthy();
-				expect(result != null && result != "").toBeTruthy();
+				expect(typeof result.response == "string").toBeTruthy();
+				expect(result.response != null && result != "").toBeTruthy();
 				done();
 			}, (e) => {
 				fail(e);
@@ -95,7 +95,6 @@ describe("get request", function() {
 				.then((result) => {
 					done();
 				}, (e) => {
-					console.log("error: ", e);
 					fail(e);
 				});
 		});

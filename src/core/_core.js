@@ -4,5 +4,10 @@ module.exports = function() {
 		return me;
 	}
 
+	bfet.global = {};
+	bfet.global.options = {
+		enableCaching: true
+	}
+
 	return bfet;
 }

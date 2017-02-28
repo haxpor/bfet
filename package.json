@@ -1,6 +1,6 @@
 {
   "name": "bfet",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "description": "A thin minimal wrapped around http|https NodeJS module for NodeJS and browser.",
   "main": "lib/bfet.js",
   "scripts": {
@@ -58,6 +58,7 @@
     "karma-html-reporter": "^0.2.7",
     "karma-jasmine": "^1.0.2",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "karma-safari-launcher": "^1.0.0",
     "karma-spec-reporter": "0.0.26",
     "lite-server": "^2.2.2",
     "remove": "^0.1.5",

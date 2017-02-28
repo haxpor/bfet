@@ -9,7 +9,8 @@ module.exports = function(bfet) {
     	jsonParsedError: 99998,
     	responseError: 99997,
     	requestError: 99996,
-    	internetConnectionIssue: 99995
+    	internetConnectionIssue: 99995,
+    	cachedItemIsNull: 99994,
     };
 
     // check if the error is about internet connection or not, also can be CORS problem
@@ -34,6 +35,7 @@ module.exports = function(bfet) {
 		 * `json_parse`: *Boolean* = Whether or not for result to be parsed via JSON parser. Set this to true to force it to parse result as json. Default is true.,
 		 * `username`: *String* = username to be used in basic authentication. It will be sent via Authorization header.  
 		 * `password`: *String* = password to be used in basic authentication. It will be sent via Authorization header.  
+		 * `headers`: *Object* = additional headers to send along with GET request.  
 		 * }
 		 * @return {Object}               Promise object
 		 * @method get
@@ -85,7 +87,29 @@ module.exports = function(bfet) {
 		    		opts.password != undefined && opts.password != null && opts.password != "") {
 		    	req_options['auth'] = opts.username + ":" + opts.password;
 		    }
+
+		    if (opts.headers != undefined && opts.headers != null) {
+		    	// merge in user's headers with bfet's headers
+		    	req_options.headers = bfet.util.merge(req_options.headers, opts.headers);
+		    }
 		  }
+
+		  // try to find out whether there's a cache for this item
+		  // if so then include conditional request header as needed per info available on cached item as well
+		  var cachedItem = null;
+    	if (bfet.global.options.enableCaching) {
+    		cachedItem = bfet.cache.get(furl);
+
+    		if (cachedItem != null) {
+    			// prioritize on etag
+    			if (cachedItem.etag != undefined && cachedItem.etag != null) {
+    				req_options.headers['If-None-Match'] = cachedItem.etag;
+    			}
+    			else if (cachedItem.last_modified != undefined && cachedItem.last_modified != null) {
+    				req_options.headers['If-Modified-Since'] = cachedItem.last_modified;
+    			}
+    		}
+    	}
 
     	return new Promise( (resolve, reject) => {
     		const lib = furl.search('https') != -1 ? require('https') : require('http');
@@ -98,27 +122,44 @@ module.exports = function(bfet) {
 					// handle http errors
 					if (response.statusCode != 200) {
 
-						if (response.statusCode == 301) {
+						if (response.statusCode == 301 ||
+								response.statusCode == 302) {
 							// make a new request
 							bfet.get(response.headers.location, opt_paramsObj, opts)
 								.then((_r) => {
-									return resolve(_r);
+									return resolve( { response: _r, responseHeader: response.headers } );
 								}, (_e) => {
+									_e.responseHeaders = response.headers;
 									return reject(_e);
 								});
 						}
-						else if (response.statusCode == 302) {
-							// make a new request
-							bfet.get(response.headers.location, opt_paramsObj, opts)
-								.then((_r) => {
-									return resolve(_r);
-								}, (_e) => {
-									return reject(_e);
-								});
+						else if (response.statusCode == 304) {
+							// if caching is enabled, then try to return cached item
+							if (bfet.global.options.enableCaching) {
+								// we need to return cached item
+								// cachedItem should not be null here
+								if (cachedItem != null) {
+									return resolve( { response: cachedItem.response, responseHeaders: cachedItem.responseHeaders });
+								}
+								else {
+									var error = new Error("Cache item is null");
+									error.code = bfet.errorCode.cachedItemIsNull;
+									error.responseHeaders = response.headers;
+									return reject(error);
+								}
+							}
+							// otherwise, return as normal error object
+							else {
+								var error = new Error("Resource has not been modified");
+								error.code = response.statusCode;
+								error.responseHeaders = response.headers;
+								return reject(error);
+							}
 						}
 						else {
 							var error = new Error(response.statusCode)
 							error.code = response.statusCode;
+							error.responseHeaders = response.headers;
 							return reject(error);
 						}
 					}
@@ -138,7 +179,8 @@ module.exports = function(bfet) {
 							if (d == null) {
 								var error = new Error("Response is null");
 								error.code = bfet.errorCode.responseIsNull;
-								return reject();
+								error.responseHeaders = response.headers;
+								return reject(error);
 							}
 
 							let rd = null;
@@ -152,6 +194,7 @@ module.exports = function(bfet) {
 								catch(e) {
 									var error = new Error("Error parsing JSON response message [" + e.message + "]");
 									error.code = bfet.errorCode.jsonParsedError;
+									error.responseHeaders = response.headers;
 									return reject(error);
 								}
 							}
@@ -163,13 +206,26 @@ module.exports = function(bfet) {
 							// all ok
 							// note: we didn't check for api-level error here, user
 							// need to manually check on their side
-							return resolve(rd);
+
+							// cache it if caching is enabled
+							if (bfet.global.options.enableCaching) {
+								// if either etag or last-modified present then set it as caching item
+								// note: header name in nodejs's http|https module is lower-case, and left intact hyphen
+								if ((response.headers.etag != undefined && response.headers.etag != null) || 
+										(response.headers['last-modified'] != undefined && response.headers['last-modified'] != null)
+									 ) {
+									bfet.cache.set(furl, rd, response.headers, response.headers.etag, response.headers['last-modified']);
+								}
+							}
+
+							return resolve( { response: rd, responseHeaders: response.headers } );
 						});
 
 						// listen to event 'error'
 						response.on('error', (e) => {
 							var error = new Error("Response error [" + e.message + "]");
 							error.code = bfet.errorCode.responseError;
+							error.responseHeaders = response.headers;
 							return reject(error); 
 						});
 					}
@@ -249,7 +305,12 @@ module.exports = function(bfet) {
 			if (opts != null) {
 		    if (opts.username != undefined && opts.username != null && opts.username != "" &&
 		    		opts.password != undefined && opts.password != null && opts.password != "") {
-		    	req_options.headers['Authorization'] = opts.username + ":" + opts.password;
+		    	postOptions['auth'] = opts.username + ":" + opts.password;
+		    }
+
+		    if (opts.headers != undefined && opts.headers != null) {
+		    	// merge in user's headers with bfet's headers
+		    	postOptions.headers = bfet.util.merge(postOptions.headers, opts.headers);
 		    }
 		  }
 
@@ -264,27 +325,21 @@ module.exports = function(bfet) {
 					// handle http errors
 					if (response.statusCode != 200) {
 
-						if (response.statusCode == 301) {
+						if (response.statusCode == 301 ||
+								response.statusCode == 302) {
 							// make a new request
 							bfet.post(response.headers.location, postDataObj, opts)
 								.then((_r) => {
-									return resolve(_r);
+									return resolve( { response: _r, responseHeaders: response.headers });
 								}, (_e) => {
-									return reject(_e);
-								});
-						}
-						else if (response.statusCode == 302) {
-							// make a new request
-							bfet.post(response.headers.location, postDataObj, opts)
-								.then((_r) => {
-									return resolve(_r);
-								}, (_e) => {
+									_e.responseHeaders = response.headers;
 									return reject(_e);
 								});
 						}
 						else {
 							var error = new Error(response.statusCode)
 							error.code = response.statusCode;
+							error.responseHeaders = response.headers;
 							return reject(error);
 						}
 					}
@@ -304,7 +359,8 @@ module.exports = function(bfet) {
 							if (d == null) {
 								var error = new Error("Response is null");
 								error.code = bfet.errorCode.responseIsNull;
-								return reject();
+								error.responseHeaders = response.headers;
+								return reject(error);
 							}
 
 							let rd = null;
@@ -318,6 +374,7 @@ module.exports = function(bfet) {
 								catch(e) {
 									var error = new Error("Error parsing JSON response message [" + e.message + "]");
 									error.code = bfet.errorCode.jsonParsedError;
+									error.responseHeaders = response.headers;
 									return reject(error);
 								}
 							}
@@ -329,13 +386,14 @@ module.exports = function(bfet) {
 							// all ok
 							// note: we didn't check for api-level error here, user
 							// need to manually check on their side
-							return resolve(rd);
+							return resolve( { response: rd, responseHeaders: response.headers } );
 						});
 
 						// listen to event 'error'
 						response.on('error', (e) => {
 							var error = new Error("Response error [" + e.message + "]");
 							error.code = bfet.errorCode.responseError;
+							error.responseHeaders = response.headers;
 							return reject(error); 
 						});
 					}

@@ -14,10 +14,11 @@ describe("post request", function() {
 		bfet.post("https://api.pbapp.net/Auth", postData)
 			.then((result) => {
 				// ensure that result is object
-				expect(typeof result == "object").toBeTruthy();
-				expect(result.success).not.toBe(null);
-				expect(result.response).not.toBe(null);
-				expect(result.response.token).not.toBe(null);
+				// note: response is actual property of object returned from POST request, so don't get confused!
+				expect(typeof result.response == "object").toBeTruthy();
+				expect(result.response.success).not.toBe(null);
+				expect(result.response.response).not.toBe(null);
+				expect(result.response.response.token).not.toBe(null);
 				done();
 			}, (e) => {
 				fail(e);
@@ -34,10 +35,10 @@ describe("post request", function() {
 		bfet.post("https://api.pbapp.net/Auth", postData, { json_parse: false })
 			.then((result) => {
 				// ensure that result is not object
-				expect(typeof result == "string").toBeTruthy();
-				expect(result.success == undefined || result.success == null).toBeTruthy();
-				expect(result.response == undefined || result.response == null).toBeTruthy();
-				expect(result.search('token') != -1).toBeTruthy();
+				expect(typeof result.response == "string").toBeTruthy();
+				expect(result.response.success == undefined || result.success == null).toBeTruthy();
+				expect(result.response.response == undefined || result.response == null).toBeTruthy();
+				expect(result.response.search('token') != -1).toBeTruthy();
 				done();
 			}, (e) => {
 				fail(e);
@@ -48,9 +49,9 @@ describe("post request", function() {
 		bfet.post("https://api.pbapp.net/Auth")
 			.then((result) => {
 				// ensure that result is not object
-				expect(typeof result == "object").toBeTruthy();
-				expect(result.success == false).toBeTruthy();
-				expect(result.error_code == "0903").toBeTruthy();
+				expect(typeof result.response == "object").toBeTruthy();
+				expect(result.response.success == false).toBeTruthy();
+				expect(result.response.error_code == "0903").toBeTruthy();
 				done();
 			}, (e) => {
 				fail(e);
