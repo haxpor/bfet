@@ -5,7 +5,8 @@ module.exports = function(config) {
 		reporters: ['spec'],
 
 		preprocessors: {
-			'src/**/*.js': ['browserify']
+			'src/**/*.js': ['browserify'],
+			'test/**/*.js': ['browserify']
 		},
 		browserify: {
 			debug: true

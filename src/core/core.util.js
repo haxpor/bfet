@@ -61,4 +61,25 @@ module.exports = function(bfet) {
 
     return param_str;
   }
+
+  /**
+   * Merge properties from both object with respect to not replace property from object 2 to object 1 if there're already existing ones
+   * and has no null values.
+   * @param  {Object} obj1 Object 1 to merge
+   * @param  {Object} obj2 Object 2 to merge
+   * @return {Object}      Merged property of object from both object 1 and 2
+   * @method  merge
+   * @memberOf bfet.util
+   */
+  util.merge = function(obj1, obj2) {
+    var retObj = obj1;
+
+    for (var prop in obj2) {
+      if (retObj[prop] == undefined || retObj[prop] == null) {
+        retObj[prop] = obj2[prop];
+      }
+    }
+
+    return retObj;
+  }
 }

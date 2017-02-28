@@ -6,7 +6,8 @@
 var bfet = require('./core/_core.js')();
 
 require('./core/core.util.js')(bfet);
-require('./core/core.js')(bfet);	// core should be defined last as it needs util
+require('./cache/cache.js')(bfet);
+require('./core/core.js')(bfet);	// core should be defined last as it needs other modules to function
 
 module.exports = bfet;
 // if it's in browser environment
