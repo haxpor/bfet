@@ -4,6 +4,10 @@ if (!isBrowser()) {
 }
 
 describe("get request", function() {
+	beforeAll(function() {
+		jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+	});
+	
 	it("should get object as result", function(done) {
 		bfet.get("https://api.pbapp.net/Player/jontestuser?api_key=2043203153")
 			.then((result) => {

@@ -4,6 +4,10 @@ if (!isBrowser()) {
 }
 
 describe("post request", function() {
+	beforeAll(function() {
+		jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+	});
+	
 	it("should get object as result", function(done) {
 
 		var postData = {

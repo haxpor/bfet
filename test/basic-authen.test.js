@@ -6,6 +6,11 @@ if (!isBrowser()) {
 var mock = require('./mockContext.js');
 
 describe("basic authentication as parameter", function() {
+
+	beforeAll(function() {
+		jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+	});
+
 	it("should get result back", function(done) {
 
 		// this token has only read access permission to user's profile data
@@ -25,6 +30,11 @@ describe("basic authentication as parameter", function() {
 
 if (!isBrowser()) {
 	describe("basic authentication as basic authorization header", function() {
+		
+		beforeAll(function() {
+			jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+		});
+
 		it("should get result back", function(done) {
 
 			// this token has only read access permission to user's profile data
@@ -43,6 +53,10 @@ if (!isBrowser()) {
 	});
 
 	describe("basic authentication as oauth header", function() {
+		beforeAll(function() {
+			jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+		});
+
 		it("should get result back", function(done) {
 
 			// this token has only read access permission to user's profile data
