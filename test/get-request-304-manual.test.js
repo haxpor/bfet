@@ -10,6 +10,8 @@ describe("get with 304 - manual", function() {
 	var url = "https://api.github.com/orgs/angrybaozi/repos";
 
 	beforeAll(function() {
+		jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+
 		// user want to handle caching manually
 		bfet.global.options.enableCaching = false;
 	});

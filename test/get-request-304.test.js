@@ -5,6 +5,10 @@ if (!isBrowser()) {
 
 describe("get with 304", function() {
 
+	beforeAll(function() {
+		jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+	});
+
 	// github supports etag
 	// thus in this case we target on caching against etag
 	var url = "https://api.github.com/orgs/angrybaozi/repos";

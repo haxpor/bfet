@@ -1,4 +1,8 @@
 describe("core's util", function() {
+	beforeAll(function() {
+		jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+	});
+	
 	it("should get same value", function() {
 
 		var opts = {

@@ -16,6 +16,8 @@ module.exports = function(config) {
 		//logLevel: config.LOG_DEBUG,
 		client: {
 			captureConsole: true
-		}
+		},
+
+		browserNoActivityTimeout: 60000,
 	});
 };
