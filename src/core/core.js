@@ -75,6 +75,7 @@ module.exports = function(bfet) {
 				hostname: baseUrl,	// cut out protocal string, and get only host name string
 				path: pathUrl,
 				port: isHttps ? 443 : 80,
+				protocol: isHttps ? 'https:' : 'http:',
 				method: 'GET',
 				headers: {
 					'User-Agent': isBrowser() ? navigator.userAgent : "bfet"
@@ -293,6 +294,7 @@ module.exports = function(bfet) {
 				hostname: baseUrl,	// cut out protocal string, and get only host name string
 				path: pathUrl,
 				port: isHttps ? 443 : 80,
+				protocol: isHttps ? 'https:' : 'http:',
 				method: 'POST',
 				headers: {
 					'User-Agent': isBrowser() ? navigator.userAgent : "bfet",

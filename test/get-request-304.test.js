@@ -16,22 +16,20 @@ describe("get with 304", function() {
 	it("should get response object attached in success route", function(done) {
 
 		// make a first request
-		bfet.get(url)
-			.then((r1) => {
+		bfet.get(url).then((result) => {
 				// ensure that result is object
-				expect(typeof r1.response == "object").toBeTruthy();
-				expect(r1.response.success).not.toBe(null);
+				expect(typeof result.response == "object").toBeTruthy();
+				expect(result.response.success).not.toBe(null);
 
-				// 2nd request
-				bfet.get(url)
-					.then((r2) => {
-						done();
-					}, (e2) => {
-						fail(e2);
-					});
-
-			}, (e1) => {
-				fail(e1);
-			});
+				return bfet.get(url);
+			}, (e) => {
+				fail("1:", e);
+			})
+			// 2nd request
+			.then((result) => {
+				done();
+			}, (e) => {
+				fail("2:", e);
+			})
 	});
 });
