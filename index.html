@@ -43,23 +43,33 @@
 <script src="dist/bfet-dev-es5.js"></script>
 </head>
 <body>
-	<header id="banner">
-	  <h2>bfet demo</h2>
-	</header>
+  <header id="banner">
+    <h2>bfet demo</h2>
+  </header>
 
-	<main>
-	  <!-- Test calling bfet API here... -->
-    <h4 class="head">Result from calling: <code>bfet.get("https://api.pbapp.net/Player/jontestuser?api_key=2043203153")</code></h4>
-	  <p></p>
-	</main>
+  <main>
+    <!-- Test calling bfet API here... -->
+    <h4 class="head">Result from calling: <code>bfet.get("https://api.github.com/orgs/angrybaozi/repos")</code></h4>
+    <p></p>
+  </main>
 
-	<script>
-		bfet.get("https://api.pbapp.net/Player/jontestuser?api_key=2043203153")
-      .then(function(result) {
-        document.querySelector('p').innerHTML = JSON.stringify(result);
-      }, function(e) {
+  <script>
+
+    bfet.get("https://api.github.com/orgs/angrybaozi/repos")
+      // 1st request
+      .then((result) => {
+        document.querySelector('p').innerHTML = JSON.stringify(result.response) + " with etag: " + result.responseHeaders.etag;
+
+        return bfet.get("https://api.github.com/orgs/angrybaozi/repos");
+      }, (e) => {
+        document.querySelector('p').innerHTML = JSON.stringify(e);
+      })
+      // 2nd request
+      .then((result) => {
+        document.querySelector('p').innerHTML = "cache hit: " + JSON.stringify(result.response);
+      }, (e) => {
         document.querySelector('p').innerHTML = JSON.stringify(e);
       });
-	</script>
+  </script>
 </body>
 </html>
